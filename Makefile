@@ -2,12 +2,18 @@ INKSCAPE?=		inkscape
 CONVERT?=		convert
 OPTIPNG?=		optipng
 OPTIPNG_ARGS?=	-q -o 99
+BASE64ENC?=		openssl enc -base64
 
-all: repology.ico repology40x40.png repology256x256.png
+all: repology.ico repology40x40.png repology256x256.png repology16x16.png.txt
 
 # for favicon
 repology16x16.png: repology-logo.svg
 	${INKSCAPE} --export-png="$@" --export-width=16 --export-height=16 repology-logo.svg
+	${OPTIPNG} ${OPTIPNG_ARGS} "$@"
+
+repology16x16.png.txt: repology16x16.png
+	echo -n "data:image/png;base64," > "$@"
+	${BASE64ENC} < repology16x16.png | tr -d '\n' >> "$@"
 
 repology32x32.png: repology-logo.svg
 	${INKSCAPE} --export-png="$@" --export-width=32 --export-height=32 repology-logo.svg
@@ -29,4 +35,4 @@ repology256x256.png: repology-logo.svg
 	${OPTIPNG} ${OPTIPNG_ARGS} "$@"
 
 clean:
-	rm -f *.png repology.svg *.ico
+	rm -f *.png repology.svg *.ico *.txt
